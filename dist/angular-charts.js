@@ -471,6 +471,7 @@ angular.module('angularCharts').directive('acChart', [
             scope.$apply();
           });
           if (config.labels) {
+
             points.append('text').attr('x', function (d) {
               return getX(d.x);
             }).attr('y', function (d) {
@@ -627,7 +628,12 @@ angular.module('angularCharts').directive('acChart', [
             complete = true;
             //Add listeners when transition is done
             path.on('mouseover', function (d) {
-              makeToolTip({ value: d.data.tooltip ? d.data.tooltip : d.data.y[0] }, d3.event);
+              makeToolTip(
+                { 
+                  value: d.data.tooltip ? d.data.tooltip : d.data.y[0],
+                  image: d.data.image
+                }
+                , d3.event);
               d3.select(this).select('path').transition().duration(200).style('stroke', 'white').style('stroke-width', '2px');
               config.mouseover(d, d3.event);
               scope.$apply();
@@ -645,7 +651,8 @@ angular.module('angularCharts').directive('acChart', [
           }
         });
         if (!!config.labels) {
-          path.append('text').attr('transform', function (d) {
+
+          path.append('text').style("color","#fff").attr('transform', function (d) {
             return 'translate(' + arc.centroid(d) + ')';
           }).attr('dy', '.35em').style('text-anchor', 'middle').text(function (d) {
             return d.data.y[0];
@@ -779,17 +786,20 @@ angular.module('angularCharts').directive('acChart', [
         if (!config.tooltips) {
           return;
         }
+        var image = data.image;
         if (typeof config.tooltips === 'function') {
           data = config.tooltips(data);
         } else {
           data = data.value;
         }
-        var el = angular.element('<p class="ac-tooltip"></p>').html(data).css({
+        var el = angular.element('<img class="tool" height="32" width="32" src="'+image+'"><p class="ac-tooltip"></p>').html(data).css({
             left: event.pageX + 20 + 'px',
             top: event.pageY - 30 + 'px'
           });
         angular.element(document.querySelector('.ac-tooltip')).remove();
+        angular.element(document.querySelector('.tool')).remove();
         angular.element(document.body).append(el);
+
         scope.$tooltip = el;
       }
       /**
@@ -907,7 +917,7 @@ angular.module('angularCharts').directive('acChart', [
 (function () {
     // styles.min.css
     var cssText = "" +
-".angular-charts-template .axis path,.angular-charts-template .axis line{fill:none;stroke:#333}.angular-charts-template .ac-title{font-weight:700;font-size:1.2em}.angular-charts-template .ac-chart{float:left;width:75%}.angular-charts-template .ac-line{fill:none;stroke-width:2px}.angular-charts-template table{float:left;max-width:25%;list-style:none;margin:0;padding:0}.angular-charts-template td[ng-bind]{display:inline-block}.angular-charts-template .ac-legend-box{border-radius:5px;height:15px;width:15px}.ac-tooltip{display:block;position:absolute;border:2px solid rgba(51,51,51,.9);background-color:rgba(22,22,22,.7);border-radius:5px;padding:5px;color:#fff}";
+".angular-charts-template .axis path,.angular-charts-template .axis line{fill:none;stroke:#333}.angular-charts-template .ac-title{font-weight:700;font-size:1.2em}.angular-charts-template .ac-chart{float:left;width:75%}.angular-charts-template .ac-line{fill:none;stroke-width:2px}.angular-charts-template table{float:left;max-width:25%;list-style:none;margin:0;padding:0}.angular-charts-template td[ng-bind]{display:inline-block}.angular-charts-template .ac-legend-box{border-radius:5px;height:15px;width:15px}.ac-tooltip{display:block;position:absolute;border:2px solid rgba(51,51,51,.9);background-color:rgba(22,22,22,.7);border-radius:5px;padding:5px;color:#ffffff; margin-top:-15px;}.tool{display:block;position:absolute; margin-left: -35px; margin-top:-15px;}";
     // cssText end
 
     var styleEl = document.createElement("style");
